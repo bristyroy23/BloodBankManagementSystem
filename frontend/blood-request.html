@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Blood Request</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="login-box">
+
+        <h1>🩸 Blood Bank</h1>
+        <h2>Blood Request Form</h2>
+
+        <form>
+
+            <label>Patient Name</label>
+            <input type="text" placeholder="Patient name" required>
+
+            <label>Contact Number</label>
+            <input type="tel" placeholder="Phone number" required>
+
+            <label>Blood Group</label>
+            <select required>
+                <option value="">Select Blood Group</option>
+                <option>A+</option>
+                <option>A-</option>
+                <option>B+</option>
+                <option>B-</option>
+                <option>AB+</option>
+                <option>AB-</option>
+                <option>O+</option>
+                <option>O-</option>
+            </select>
+
+            <label>Required Units</label>
+            <input type="number" min="1" placeholder="Enter units" required>
+
+            <label>Hospital Name</label>
+            <input type="text" placeholder="Hospital name" required>
+
+            <label>Required Date</label>
+            <input type="date" required>
+
+            <label>Additional Details</label>
+            <input type="text" placeholder="Enter details">
+
+            <button type="submit">Submit Request</button>
+
+        </form>
+
+        <br>
+
+        <a href="user-dashboard.html">Back to Dashboard</a>
+
+    </div>
+
+</body>
+</html>

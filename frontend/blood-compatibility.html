@@ -1,0 +1,94 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Blood Compatibility</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="login-box">
+
+        <h1>🩸 Blood Bank</h1>
+        <h2>Blood Compatibility Checker</h2>
+
+        <form id="compatibilityForm">
+
+            <label>Donor Blood Group</label>
+
+            <select id="donor" required>
+                <option value="">Select Donor Group</option>
+                <option>A+</option>
+                <option>A-</option>
+                <option>B+</option>
+                <option>B-</option>
+                <option>AB+</option>
+                <option>AB-</option>
+                <option>O+</option>
+                <option>O-</option>
+            </select>
+
+            <label>Patient Blood Group</label>
+
+            <select id="patient" required>
+                <option value="">Select Patient Group</option>
+                <option>A+</option>
+                <option>A-</option>
+                <option>B+</option>
+                <option>B-</option>
+                <option>AB+</option>
+                <option>AB-</option>
+                <option>O+</option>
+                <option>O-</option>
+            </select>
+
+            <button type="submit">Check Compatibility</button>
+
+        </form>
+
+        <h3 id="result"></h3>
+
+        <br>
+
+        <a href="admin-dashboard.html">Back to Dashboard</a>
+
+        <p>Note: Final transfusion compatibility must be confirmed by a blood bank through testing and crossmatching.</p>
+
+    </div>
+
+    <script>
+        const compatibility = {
+            "O-": ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"],
+            "O+": ["O+", "A+", "B+", "AB+"],
+            "A-": ["A-", "A+", "AB-", "AB+"],
+            "A+": ["A+", "AB+"],
+            "B-": ["B-", "B+", "AB-", "AB+"],
+            "B+": ["B+", "AB+"],
+            "AB-": ["AB-", "AB+"],
+            "AB+": ["AB+"]
+        };
+
+        document.getElementById("compatibilityForm")
+        .addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+            const donor = document.getElementById("donor").value;
+            const patient = document.getElementById("patient").value;
+
+            const result = document.getElementById("result");
+
+            if (compatibility[donor].includes(patient)) {
+                result.innerText = "Generally compatible for RBC donation.";
+                result.style.color = "green";
+            } else {
+                result.innerText = "Not compatible for standard RBC donation.";
+                result.style.color = "red";
+            }
+
+        });
+    </script>
+
+</body>
+</html>
