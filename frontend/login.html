@@ -1,4 +1,4 @@
-
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,12 +24,14 @@
             </select>
 
             <label>Email Address</label>
-            <input type="email" placeholder="Enter your email" required>
+            <input type="email" id="email"
+                   placeholder="Enter your email" required>
 
             <label>Password</label>
-            <input type="password" placeholder="Enter your password" required>
+            <input type="password" id="password"
+                   placeholder="Enter your password" required>
 
-            <a href="forgot-password.html">Forgot Password?</a>
+           <a href="forget password.html">Forget Password?</a>
 
             <button type="submit">Login</button>
 
@@ -45,5 +47,57 @@
 
     </div>
 
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async function(e) {
+
+            e.preventDefault();
+
+            const role = document.getElementById("role").value;
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+
+            const endpoint = role === "admin"
+                ? "http://localhost:5000/api/admin/login"
+                : "http://localhost:5000/api/user/login";
+
+            try {
+
+                const response = await fetch(endpoint, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    alert(data.message || "Login Failed");
+                    return;
+                }
+
+                const account = data.admin || data.user;
+
+                localStorage.setItem("user", JSON.stringify(account));
+                localStorage.setItem("role", role);
+
+                alert("Login Successful!");
+
+                if (role === "admin") {
+                    window.location.href = "admindashboard.html";
+                } else {
+                    window.location.href = "userdashboard.html";
+                }
+
+            } catch (error) {
+                alert("Backend connection failed!");
+                console.error(error);
+            }
+
+        });
+    </script>
+
 </body>
 </html>
+```

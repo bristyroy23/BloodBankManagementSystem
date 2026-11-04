@@ -16,27 +16,168 @@
 
         <table border="1" width="100%" cellpadding="10">
 
-            <tr>
-                <th>Blood Group</th>
-                <th>Available Units</th>
-            </tr>
+            <thead>
+                <tr>
+                    <th>Blood Group</th>
+                    <th>Available Units</th>
+                    <th>Update Quantity</th>
+                </tr>
+            </thead>
 
-            <tr><td>A+</td><td>0</td></tr>
-            <tr><td>A-</td><td>0</td></tr>
-            <tr><td>B+</td><td>0</td></tr>
-            <tr><td>B-</td><td>0</td></tr>
-            <tr><td>AB+</td><td>0</td></tr>
-            <tr><td>AB-</td><td>0</td></tr>
-            <tr><td>O+</td><td>0</td></tr>
-            <tr><td>O-</td><td>0</td></tr>
+            <tbody id="bloodStockTable">
+                <tr>
+                    <td colspan="3">Loading...</td>
+                </tr>
+            </tbody>
 
         </table>
 
         <br>
 
-        <a href="admin-dashboard.html">Back to Dashboard</a>
+        <a href="admindashboard.html">Back to Dashboard</a>
 
     </div>
+
+    <script>
+
+        // Load All Blood Stock
+        async function loadBloodStock() {
+
+            try {
+
+                const response = await fetch(
+                    "http://localhost:5000/api/blood-stock/all"
+                );
+
+                const data = await response.json();
+
+                const table = document.getElementById("bloodStockTable");
+
+                if (!response.ok || !data.success) {
+                    table.innerHTML = `
+                        <tr>
+                            <td colspan="3">Blood Stock Load Failed</td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                table.innerHTML = "";
+
+                data.bloodStock.forEach(item => {
+
+                    table.innerHTML += `
+                        <tr>
+                            <td>${item.blood_group}</td>
+
+                            <td>${item.quantity}</td>
+
+                            <td>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    step="1"
+                                    id="quantity-${item.id}"
+                                    value="${item.quantity}"
+                                    style="width:70px; padding:8px; display:inline-block;"
+                                >
+
+                                <button onclick="updateStock(${item.id})">
+                                    Update
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+
+                });
+
+                if (data.bloodStock.length === 0) {
+                    table.innerHTML = `
+                        <tr>
+                            <td colspan="3">No Blood Stock Found</td>
+                        </tr>
+                    `;
+                }
+
+            } catch (error) {
+
+                console.log(error);
+
+                document.getElementById("bloodStockTable").innerHTML = `
+                    <tr>
+                        <td colspan="3">Server Connection Failed</td>
+                    </tr>
+                `;
+
+            }
+
+        }
+
+
+        // Update Blood Stock
+        async function updateStock(id) {
+
+            const quantityInput = document.getElementById("quantity-" + id);
+
+            const quantity = Number(quantityInput.value);
+
+            if (
+                quantityInput.value.trim() === "" ||
+                !Number.isInteger(quantity) ||
+                quantity < 0
+            ) {
+
+                alert("Please enter a valid quantity!");
+                return;
+
+            }
+
+            try {
+
+                const response = await fetch(
+                    `http://localhost:5000/api/blood-stock/update/${id}`,
+                    {
+                        method: "PUT",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            quantity: quantity
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+
+                    alert("Blood Stock Updated Successfully!");
+
+                    await loadBloodStock();
+
+                } else {
+
+                    alert(data.message || "Update Failed!");
+
+                }
+
+            } catch (error) {
+
+                console.log(error);
+
+                alert("Server Connection Failed!");
+
+            }
+
+        }
+
+
+        // Page Load
+        loadBloodStock();
+
+    </script>
 
 </body>
 </html>

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,7 +9,7 @@
 
     <h1>🩸 Blood Bank Admin Dashboard</h1>
 
-    <h2>Welcome Admin!</h2>
+    <h2>Welcome Admin, <span id="adminName">Admin</span>!</h2>
 
     <div class="cards">
 
@@ -48,7 +47,27 @@
 
     <br>
 
-    <a href="index.html">Logout</a>
+    <a href="#" onclick="logout()">Logout</a>
+
+    <script>
+        // Admin information
+        const admin = JSON.parse(localStorage.getItem("user"));
+        const role = localStorage.getItem("role");
+
+        // Check admin login
+        if (!admin || role !== "admin") {
+            window.location.href = "login.html";
+        } else {
+            document.getElementById("adminName").textContent = admin.name;
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem("user");
+            localStorage.removeItem("role");
+            window.location.href = "login.html";
+        }
+    </script>
 
 </body>
 </html>

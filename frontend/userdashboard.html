@@ -1,4 +1,4 @@
-
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,39 +10,62 @@
 
     <h1>🩸 Blood Bank</h1>
 
-    <h2>Welcome User!</h2>
+    <h2 id="welcomeMessage">Welcome User!</h2>
 
     <div class="cards">
 
         <div class="card">
             <h2>Find Donor</h2>
             <p>Find blood donors.</p>
-            <a href="#">Search Donor</a>
+            <a href="find-donor.html">Search Donor</a>
         </div>
 
         <div class="card">
             <h2>Blood Request</h2>
             <p>Request for blood.</p>
-            <a href="#">Request Blood</a>
+            <a href="blood-request.html">Request Blood</a>
         </div>
 
         <div class="card">
             <h2>My Requests</h2>
             <p>Check your requests.</p>
-            <a href="#">View Requests</a>
+            <a href="my-requests.html">View Requests</a>
         </div>
 
         <div class="card">
             <h2>My Profile</h2>
             <p>Manage your information.</p>
-            <a href="#">My Profile</a>
+            <a href="my-profile.html">My Profile</a>
         </div>
 
     </div>
 
     <br>
 
-    <a href="index.html">Logout</a>
+    <a href="#" onclick="logout()">Logout</a>
+
+    <script>
+
+        // Show User Name
+        const user = JSON.parse(localStorage.getItem("user"));
+        const role = localStorage.getItem("role");
+
+        if (!user || role !== "user") {
+            window.location.href = "login.html";
+        } else {
+            document.getElementById("welcomeMessage").innerText =
+                "Welcome " + user.name + "!";
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem("user");
+            localStorage.removeItem("role");
+            window.location.href = "login.html";
+        }
+
+    </script>
 
 </body>
 </html>
+```
