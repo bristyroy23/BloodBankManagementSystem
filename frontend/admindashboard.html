@@ -15,7 +15,7 @@
 
         <div class="card">
             <h3>Donor Management</h3>
-            <a href="donors.html">Manage Donors</a>
+            <a href="/frontend/doners.html">Manage Donors</a>
         </div>
 
         <div class="card">
@@ -50,23 +50,22 @@
     <a href="#" onclick="logout()">Logout</a>
 
     <script>
-        // Admin information
+
         const admin = JSON.parse(localStorage.getItem("user"));
         const role = localStorage.getItem("role");
 
-        // Check admin login
         if (!admin || role !== "admin") {
             window.location.href = "login.html";
         } else {
             document.getElementById("adminName").textContent = admin.name;
         }
 
-        // Logout function
         function logout() {
             localStorage.removeItem("user");
             localStorage.removeItem("role");
             window.location.href = "login.html";
         }
+
     </script>
 
 </body>

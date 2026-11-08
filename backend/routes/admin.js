@@ -33,8 +33,9 @@ router.post("/login", (req, res) => {
                 return res.status(401).send("Wrong Password");
             }
 
-            res.json({
-                message: "Admin Login Successful",
+           res.json({
+    success: true,
+    message: "Admin Login Successful",
                 admin: {
                     id: admin.id,
                     name: admin.name,

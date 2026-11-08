@@ -1,3 +1,4 @@
+
 const express = require("express");
 const router = express.Router();
 const db = require("../db");
@@ -38,11 +39,36 @@ router.post("/register", async (req, res) => {
                 });
             }
 
-            res.json({
-                success: true,
-                message: "User Registration Successful",
-                userId: result.insertId
-            });
+            const userId = result.insertId;
+
+            // Save user information in recipients table
+            const recipientSql = `
+                INSERT INTO recipients (user_id, name, phone)
+                VALUES (?, ?, ?)
+            `;
+
+            db.query(
+                recipientSql,
+                [userId, name, phone],
+                (recipientErr, recipientResult) => {
+                    if (recipientErr) {
+                        console.error("Recipient Save Error:", recipientErr);
+
+                        return res.status(500).json({
+                            success: false,
+                            message: "User registered but recipient information could not be saved",
+                            error: recipientErr.message
+                        });
+                    }
+
+                    res.json({
+                        success: true,
+                        message: "User Registration Successful",
+                        userId: userId,
+                        recipientId: recipientResult.insertId
+                    });
+                }
+            );
         });
     } catch (error) {
         res.status(500).json({
@@ -95,16 +121,33 @@ router.post("/login", (req, res) => {
                 });
             }
 
-            res.json({
-                success: true,
-                message: "User Login Successful",
-                user: {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    phone: user.phone
+            // Find recipient ID linked to this user
+            db.query(
+                "SELECT id FROM recipients WHERE user_id = ?",
+                [user.id],
+                (recipientErr, recipientResult) => {
+                    if (recipientErr) {
+                        return res.status(500).json({
+                            success: false,
+                            message: "Recipient lookup failed"
+                        });
+                    }
+
+                    res.json({
+                        success: true,
+                        message: "User Login Successful",
+                        user: {
+                            id: user.id,
+                            name: user.name,
+                            email: user.email,
+                            phone: user.phone,
+                            recipientId: recipientResult.length > 0
+                                ? recipientResult[0].id
+                                : null
+                        }
+                    });
                 }
-            });
+            );
         } catch (error) {
             res.status(500).json({
                 success: false,

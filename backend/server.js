@@ -7,7 +7,8 @@ const donorRoutes = require("./routes/donors");
 const bloodStockRoutes = require("./routes/bloodStock");
 const userRoutes = require("./routes/users");
 const passwordRoutes = require("./routes/password");
-
+const path = require("path");
+const requestRoutes = require("./routes/requests");
 const app = express();
 
 // Middleware
@@ -18,6 +19,8 @@ app.use("/api/donors", donorRoutes);
 app.use("/api/blood-stock", bloodStockRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/password", passwordRoutes);
+app.use("/frontend", express.static(path.join(__dirname, "../frontend")));
+app.use("/api/requests", requestRoutes);
 app.use(express.urlencoded({ extended: true }));
 
 
