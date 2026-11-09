@@ -13,38 +13,34 @@
         <h1>🩸 Blood Bank</h1>
         <h2>Blood Request Form</h2>
 
-        <form>
+        <form id="requestForm">
 
             <label>Patient Name</label>
-            <input type="text" placeholder="Patient name" required>
+            <input type="text" id="patientName" required>
 
             <label>Contact Number</label>
-            <input type="tel" placeholder="Phone number" required>
+            <input type="tel" id="contactNumber" required>
 
             <label>Blood Group</label>
-            <select required>
-                <option value="">Select Blood Group</option>
-                <option>A+</option>
-                <option>A-</option>
-                <option>B+</option>
-                <option>B-</option>
-                <option>AB+</option>
-                <option>AB-</option>
-                <option>O+</option>
-                <option>O-</option>
+            <select id="bloodGroup" required>
+                <option value="">Loading Blood Groups...</option>
             </select>
 
             <label>Required Units</label>
-            <input type="number" min="1" placeholder="Enter units" required>
+            <input type="number" id="quantity" min="1"
+                   placeholder="Enter units" required>
 
             <label>Hospital Name</label>
-            <input type="text" placeholder="Hospital name" required>
+            <select id="hospital" required>
+                <option value="">Loading Hospitals...</option>
+            </select>
 
             <label>Required Date</label>
-            <input type="date" required>
+            <input type="date" id="requestDate" required>
 
             <label>Additional Details</label>
-            <input type="text" placeholder="Enter details">
+            <input type="text" id="details"
+                   placeholder="Enter details">
 
             <button type="submit">Submit Request</button>
 
@@ -52,9 +48,108 @@
 
         <br>
 
-        <a href="user-dashboard.html">Back to Dashboard</a>
+        <a href="userdashboard.html">Back to Dashboard</a>
 
     </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        // Check Login
+        if (!user || !user.recipientId) {
+            alert("Please login again!");
+            window.location.href = "login.html";
+        }
+
+        // Load Blood Groups and Hospitals
+        async function loadOptions() {
+            try {
+                const response = await fetch(
+                    "http://localhost:5000/api/requests/options"
+                );
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message);
+                }
+
+                const bloodGroup = document.getElementById("bloodGroup");
+                const hospital = document.getElementById("hospital");
+
+                bloodGroup.innerHTML =
+                    '<option value="">Select Blood Group</option>';
+
+                hospital.innerHTML =
+                    '<option value="">Select Hospital</option>';
+
+                data.bloodGroups.forEach(item => {
+    bloodGroup.innerHTML +=
+        `<option value="${item.id}">
+            ${item.blood_group}
+        </option>`;
+});
+
+                data.hospitals.forEach(item => {
+                    hospital.innerHTML +=
+                        `<option value="${item.id}">
+                            ${item.hospital_name}
+                        </option>`;
+                });
+
+            } catch (error) {
+                alert("Could not load Blood Groups or Hospitals!");
+                console.error(error);
+            }
+        }
+
+        loadOptions();
+
+        // Submit Request
+        document.getElementById("requestForm")
+        .addEventListener("submit", async function(e) {
+
+            e.preventDefault();
+
+            const requestData = {
+                recipient_id: user.recipientId,
+                blood_group_id:
+                    document.getElementById("bloodGroup").value,
+                hospital_id:
+                    document.getElementById("hospital").value,
+                quantity:
+                    document.getElementById("quantity").value,
+                request_date:
+                    document.getElementById("requestDate").value
+            };
+
+            try {
+                const response = await fetch(
+                    "http://localhost:5000/api/requests/add",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(requestData)
+                    }
+                );
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    alert("Blood Request Submitted Successfully!");
+                    document.getElementById("requestForm").reset();
+                } else {
+                    alert(data.message || "Request Failed!");
+                }
+
+            } catch (error) {
+                alert("Server Connection Failed!");
+                console.error(error);
+            }
+        });
+    </script>
 
 </body>
 </html>

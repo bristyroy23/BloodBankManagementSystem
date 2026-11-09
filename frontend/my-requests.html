@@ -11,36 +11,83 @@
     <h1>🩸 My Blood Requests</h1>
 
     <div class="login-box">
-
         <h2>Request History</h2>
 
         <table border="1" width="100%" cellpadding="10">
+            <thead>
+                <tr>
+                    <th>Blood Group</th>
+                    <th>Units</th>
+                    <th>Hospital</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
 
-            <tr>
-                <th>Blood Group</th>
-                <th>Units</th>
-                <th>Date</th>
-                <th>Status</th>
-            </tr>
-
-            <tr>
-                <td>A+</td>
-                <td>2</td>
-                <td>2026-11-02</td>
-                <td>Pending</td>
-            </tr>
-
+            <tbody id="requestList">
+                <tr>
+                    <td colspan="5">Loading requests...</td>
+                </tr>
+            </tbody>
         </table>
 
         <br>
-
         <a href="blood-request.html">New Request</a>
-
         <br><br>
-
-        <a href="user-dashboard.html">Back to Dashboard</a>
-
+        <a href="userdashboard.html">Back to Dashboard</a>
     </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if (!user || !user.recipientId) {
+            alert("Please login again!");
+            window.location.href = "login.html";
+        }
+
+        async function loadMyRequests() {
+            const requestList = document.getElementById("requestList");
+
+            try {
+                const response = await fetch(
+                    `http://localhost:5000/api/requests/my/${user.recipientId}`
+                );
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || "Could not load requests");
+                }
+
+                if (data.requests.length === 0) {
+                    requestList.innerHTML =
+                        '<tr><td colspan="5">No requests found.</td></tr>';
+                    return;
+                }
+
+                requestList.innerHTML = "";
+
+                data.requests.forEach(request => {
+                    requestList.innerHTML += `
+                        <tr>
+                            <td>${request.blood_group}</td>
+                            <td>${request.quantity}</td>
+                            <td>${request.hospital_name}</td>
+                            <td>${request.request_date}</td>
+                            <td>${request.status}</td>
+                        </tr>
+                    `;
+                });
+
+            } catch (error) {
+                console.error(error);
+                requestList.innerHTML =
+                    '<tr><td colspan="5">Could not load requests.</td></tr>';
+            }
+        }
+
+        loadMyRequests();
+    </script>
 
 </body>
 </html>

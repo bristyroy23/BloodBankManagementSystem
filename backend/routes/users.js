@@ -6,9 +6,20 @@ const bcrypt = require("bcrypt");
 
 // User Registration
 router.post("/register", async (req, res) => {
-    const { name, email, phone, password } = req.body;
+    const {
+        name,
+        email,
+        phone,
+        age,
+        gender,
+        address,
+        password
+    } = req.body;
 
-    if (!name || !email || !phone || !password) {
+    if (
+        !name || !email || !phone ||
+        !age || !gender || !address || !password
+    ) {
         return res.status(400).json({
             success: false,
             message: "All fields are required"
@@ -41,22 +52,22 @@ router.post("/register", async (req, res) => {
 
             const userId = result.insertId;
 
-            // Save user information in recipients table
             const recipientSql = `
-                INSERT INTO recipients (user_id, name, phone)
-                VALUES (?, ?, ?)
+                INSERT INTO recipients
+                (user_id, name, phone, age, gender, address)
+                VALUES (?, ?, ?, ?, ?, ?)
             `;
 
             db.query(
                 recipientSql,
-                [userId, name, phone],
+                [userId, name, phone, age, gender, address],
                 (recipientErr, recipientResult) => {
                     if (recipientErr) {
                         console.error("Recipient Save Error:", recipientErr);
 
                         return res.status(500).json({
                             success: false,
-                            message: "User registered but recipient information could not be saved",
+                            message: "Recipient information could not be saved",
                             error: recipientErr.message
                         });
                     }
@@ -121,7 +132,6 @@ router.post("/login", (req, res) => {
                 });
             }
 
-            // Find recipient ID linked to this user
             db.query(
                 "SELECT id FROM recipients WHERE user_id = ?",
                 [user.id],
