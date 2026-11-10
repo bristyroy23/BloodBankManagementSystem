@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,41 +8,57 @@
 
 <body>
 
-    <h1>🩸 Blood Bank</h1>
+    <div class="navbar">
+        <h2>🩸 Blood Bank</h2>
 
-    <h2 id="welcomeMessage">Welcome User!</h2>
+        <div>
+            <a href="userdashboard.html">Home</a>
+            <a href="blood-stock.html">Blood Stock</a>
+            <a href="myprofile.html">My Profile</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </div>
+
+    <h2 id="welcomeMessage" class="heading">
+        Welcome User!
+    </h2>
+
+    <p style="text-align:center; color:#666;">
+        Welcome to Blood Bank Management System
+    </p>
 
     <div class="cards">
 
         <div class="card">
-            <h2>Find Donor</h2>
+            <h2>🔍 Find Donor</h2>
             <p>Find blood donors.</p>
-            <a href="find-donor.html">Search Donor</a>
+            <a href="find-donor.html" class="btn">Search Donor</a>
         </div>
 
         <div class="card">
-            <h2>Blood Request</h2>
-            <p>Request for blood.</p>
-            <a href="blood-request.html">Request Blood</a>
+            <h2>🩸 Blood Request</h2>
+            <p>Request blood when needed.</p>
+            <a href="blood-request.html" class="btn">Request Blood</a>
         </div>
 
         <div class="card">
-            <h2>My Requests</h2>
-            <p>Check your requests.</p>
-            <a href="my-requests.html">View Requests</a>
+            <h2>📋 My Requests</h2>
+            <p>Check your blood requests.</p>
+            <a href="my-requests.html" class="btn">View Requests</a>
         </div>
 
         <div class="card">
-            <h2>My Profile</h2>
+            <h2>👤 My Profile</h2>
             <p>Manage your information.</p>
-            <a href="my-profile.html">My Profile</a>
+            <a href="myprofile.html" class="btn">My Profile</a>
         </div>
 
     </div>
 
-    <br>
-
-    <a href="#" onclick="logout()">Logout</a>
+    <footer>
+        <p>🩸 Blood Bank Management System</p>
+        <p>Donate Blood, Save Lives!</p>
+    </footer>
 
     <script>
 
@@ -68,4 +84,3 @@
 
 </body>
 </html>
-```

@@ -94,6 +94,83 @@ router.post("/add", (req, res) => {
         });
     });
 });
+
+// Get All Blood Requests (Admin)
+router.get("/all", (req, res) => {
+    const sql = `
+        SELECT
+            br.id,
+            r.name AS recipient_name,
+            bg.blood_group,
+            br.quantity,
+            h.hospital_name,
+            br.request_date,
+            br.status
+        FROM blood_requests br
+        LEFT JOIN recipients r
+            ON br.recipient_id = r.id
+        LEFT JOIN blood_groups bg
+            ON br.blood_group_id = bg.id
+        LEFT JOIN hospitals h
+            ON br.hospital_id = h.id
+        ORDER BY br.id DESC
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.log("All Requests Error:", err);
+            return res.status(500).json({
+                success: false,
+                message: "Could not load all requests"
+            });
+        }
+
+        res.json({
+            success: true,
+            requests: results
+        });
+    });
+});
+
+// Update Blood Request Status (Admin)
+router.put("/status/:id", (req, res) => {
+    const { status } = req.body;
+    const requestId = req.params.id;
+
+    if (!["Pending", "Approved", "Rejected"].includes(status)) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid status"
+        });
+    }
+
+    db.query(
+        "UPDATE blood_requests SET status = ? WHERE id = ?",
+        [status, requestId],
+        (err, result) => {
+            if (err) {
+                console.log("Status Update Error:", err);
+                return res.status(500).json({
+                    success: false,
+                    message: "Status update failed"
+                });
+            }
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Request not found"
+                });
+            }
+
+            res.json({
+                success: true,
+                message: "Request status updated successfully!"
+            });
+        }
+    );
+});
+
 // Get My Blood Requests
 router.get("/my/:recipientId", (req, res) => {
     const recipientId = req.params.recipientId;

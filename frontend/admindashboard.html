@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,7 +16,7 @@
 
         <div class="card">
             <h3>Donor Management</h3>
-            <a href="/frontend/doners.html">Manage Donors</a>
+            <a href="doners.html">Manage Donors</a>
         </div>
 
         <div class="card">
@@ -25,7 +26,7 @@
 
         <div class="card">
             <h3>Blood Requests</h3>
-            <a href="blood-request.html">View Requests</a>
+            <a href="manage-request.html">Manage Requests</a>
         </div>
 
         <div class="card">
@@ -50,7 +51,6 @@
     <a href="#" onclick="logout()">Logout</a>
 
     <script>
-
         const admin = JSON.parse(localStorage.getItem("user"));
         const role = localStorage.getItem("role");
 
@@ -65,7 +65,6 @@
             localStorage.removeItem("role");
             window.location.href = "login.html";
         }
-
     </script>
 
 </body>

@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Blood Requests</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1 class="heading">🩸 Manage Blood Requests</h1>
+
+    <div class="login-box" style="width:95%; max-width:1100px;">
+        <h2>All Blood Requests</h2>
+
+        <table border="1" width="100%" cellpadding="10">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Recipient</th>
+                    <th>Blood Group</th>
+                    <th>Quantity</th>
+                    <th>Hospital</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody id="requestList">
+                <tr>
+                    <td colspan="8">Loading requests...</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <br>
+        <a href="admindashboard.html">Back to Dashboard</a>
+    </div>
+
+    <script>
+        async function loadRequests() {
+            const requestList = document.getElementById("requestList");
+
+            try {
+                const response = await fetch(
+                    "http://localhost:5000/api/requests/all"
+                );
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error("Could not load requests");
+                }
+
+                if (data.requests.length === 0) {
+                    requestList.innerHTML =
+                        '<tr><td colspan="8">No blood requests found.</td></tr>';
+                    return;
+                }
+
+                requestList.innerHTML = "";
+
+                data.requests.forEach(request => {
+                    requestList.innerHTML += `
+                        <tr>
+                            <td>${request.id}</td>
+                            <td>${escapeHTML(request.recipient_name || "N/A")}</td>
+                            <td>${escapeHTML(request.blood_group || "N/A")}</td>
+                            <td>${request.quantity}</td>
+                            <td>${escapeHTML(request.hospital_name || "N/A")}</td>
+                            <td>${new Date(request.request_date).toLocaleDateString("en-GB", {timeZone:"Asia/Dhaka"})}</td>
+                            <td>${escapeHTML(request.status || "Pending")}</td>
+                            <td>
+                                <select id="status-${request.id}">
+                                    <option value="Pending" ${request.status === "Pending" ? "selected" : ""}>Pending</option>
+                                    <option value="Approved" ${request.status === "Approved" ? "selected" : ""}>Approved</option>
+                                    <option value="Rejected" ${request.status === "Rejected" ? "selected" : ""}>Rejected</option>
+                                </select>
+                                <button onclick="updateStatus(${request.id})">
+                                    Update
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+            } catch (error) {
+                requestList.innerHTML =
+                    '<tr><td colspan="8">Error loading requests.</td></tr>';
+                console.log(error);
+            }
+        }
+
+        async function updateStatus(id) {
+            const status = document.getElementById("status-" + id).value;
+
+            try {
+                const response = await fetch(
+                    `http://localhost:5000/api/requests/status/${id}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ status })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || "Status update failed");
+                }
+
+                alert("Request status updated successfully!");
+                loadRequests();
+
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        function escapeHTML(value) {
+            return String(value).replace(/[&<>"']/g, char => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            })[char]);
+        }
+
+        loadRequests();
+    </script>
+
+</body>
+</html>

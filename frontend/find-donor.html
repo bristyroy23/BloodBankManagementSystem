@@ -8,7 +8,7 @@
 
 <body>
 
-    <h1>🩸 Find Blood Donor</h1>
+    <h1 class="heading">🩸 Find Blood Donor</h1>
 
     <div class="login-box">
         <h2>Search Donor</h2>
@@ -29,12 +29,15 @@
         <button onclick="searchDonors()">Search</button>
     </div>
 
-    <h2>Available Donors</h2>
+    <h2 class="heading">Available Donors</h2>
 
-    <div id="donorList"></div>
+    <div id="donorList" class="cards"></div>
 
     <br>
-    <a href="userdashboard.html">Back to Dashboard</a>
+
+    <p style="text-align:center; margin-bottom:25px;">
+        <a href="userdashboard.html">Back to Dashboard</a>
+    </p>
 
     <script>
         const API_URL = "http://localhost:5000/api/donors/all";
