@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -31,14 +31,13 @@
             <input type="password" id="password"
                    placeholder="Enter your password" required>
 
-           <a href="forget password.html">Forget Password?</a>
+            <a href="forget password.html">Forget Password?</a>
 
             <button type="submit">Login</button>
 
         </form>
 
         <p>Don't have an account?</p>
-
         <a href="register.html">Create Account</a>
 
         <br><br>
@@ -82,6 +81,20 @@
                 localStorage.setItem("user", JSON.stringify(account));
                 localStorage.setItem("role", role);
 
+                // Save JWT Token for Admin
+                if (role === "admin") {
+
+                    if (!data.token) {
+                        alert("Admin token was not received!");
+                        return;
+                    }
+
+                    localStorage.setItem("adminToken", data.token);
+
+                } else {
+                    localStorage.removeItem("adminToken");
+                }
+
                 alert("Login Successful!");
 
                 if (role === "admin") {
@@ -100,4 +113,3 @@
 
 </body>
 </html>
-```

@@ -11,6 +11,7 @@
     <h1>🩸 My Blood Requests</h1>
 
     <div class="login-box request-box">
+
         <h2>Request History</h2>
 
         <table border="1" width="100%" cellpadding="10">
@@ -32,12 +33,17 @@
         </table>
 
         <br>
+
         <a href="blood-request.html">New Request</a>
+
         <br><br>
+
         <a href="userdashboard.html">Back to Dashboard</a>
+
     </div>
 
     <script>
+
         const user = JSON.parse(localStorage.getItem("user"));
 
         if (!user || !user.recipientId) {
@@ -46,9 +52,11 @@
         }
 
         async function loadMyRequests() {
+
             const requestList = document.getElementById("requestList");
 
             try {
+
                 const response = await fetch(
                     `http://localhost:5000/api/requests/my/${user.recipientId}`
                 );
@@ -59,15 +67,18 @@
                     throw new Error(data.message || "Could not load requests");
                 }
 
-                if (data.requests.length === 0) {
+                if (!data.requests || data.requests.length === 0) {
+
                     requestList.innerHTML =
                         '<tr><td colspan="5">No requests found.</td></tr>';
+
                     return;
                 }
 
                 requestList.innerHTML = "";
 
                 data.requests.forEach(request => {
+
                     requestList.innerHTML += `
                         <tr>
                             <td>${request.blood_group}</td>
@@ -77,16 +88,24 @@
                             <td>${request.status}</td>
                         </tr>
                     `;
+
                 });
 
             } catch (error) {
+
                 console.error(error);
+
                 requestList.innerHTML =
                     '<tr><td colspan="5">Could not load requests.</td></tr>';
+
             }
+
         }
 
-        loadMyRequests();
+        if (user && user.recipientId) {
+            loadMyRequests();
+        }
+
     </script>
 
 </body>

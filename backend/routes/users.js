@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 const bcrypt = require("bcrypt");
+const verifyAdmin = require("../middleware/auth");
 
 // User Registration
 router.post("/register", async (req, res) => {
@@ -165,6 +166,70 @@ router.post("/login", (req, res) => {
             });
         }
     });
+});
+
+// Get All Registered Users (Admin Only)
+router.get("/", verifyAdmin, (req, res) => {
+    const sql = `
+        SELECT id, name, email, phone
+        FROM users
+        ORDER BY id DESC
+    `;
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            return res.status(500).json({
+                success: false,
+                message: "Failed to load users",
+                error: err.message
+            });
+        }
+
+        res.json({
+            success: true,
+            users: result
+        });
+    });
+});
+
+// Delete User (Admin Only)
+router.delete("/:id", verifyAdmin, (req, res) => {
+    const userId = Number(req.params.id);
+
+    if (!Number.isInteger(userId) || userId <= 0) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid User ID"
+        });
+    }
+
+    db.query(
+        "DELETE FROM users WHERE id = ?",
+        [userId],
+        (err, result) => {
+            if (err) {
+                console.error("Delete User Error:", err);
+
+                return res.status(500).json({
+                    success: false,
+                    message: "Could not delete user. This user may have related records.",
+                    error: err.message
+                });
+            }
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: "User not found"
+                });
+            }
+
+            res.json({
+                success: true,
+                message: "User deleted successfully"
+            });
+        }
+    );
 });
 
 module.exports = router;

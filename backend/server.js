@@ -1,4 +1,8 @@
+require("dotenv").config({
+    path: require("path").join(__dirname, ".env")
+});
 
+console.log("JWT SECRET STATUS:", Boolean(process.env.JWT_SECRET));
 const express = require("express");
 const cors = require("cors");
 const db = require("./db");
@@ -9,6 +13,7 @@ const userRoutes = require("./routes/users");
 const passwordRoutes = require("./routes/password");
 const path = require("path");
 const requestRoutes = require("./routes/requests");
+const { ok } = require("assert");
 const app = express();
 
 // Middleware
